@@ -44,7 +44,7 @@ Adafruit_VS1053_FilePlayer musicPlayer =
   Adafruit_VS1053_FilePlayer(SHIELD_RESET, SHIELD_CS, SHIELD_DCS, DREQ, CARDCS);
 
 byte currentTrack= 0; // 1 to 8, 0 for none
-char* filenames[]= {"001DTN~1.MP3", "002DTN~1.MP3", "003DTN~1.MP3", "004DTN~1.MP3"}; 
+char* filenames[]= {"1.MP3", "2.MP3", "3.MP3", "4.MP3", "5.MP3", "6.MP3", "7.MP3", "8.MP3"}; 
 
 void setup(void) {
   Serial.begin(9600);

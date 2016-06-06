@@ -1,4 +1,7 @@
 /*
+  This uses the red Sparkfun RFID Eval Board for Writing tags
+  This is a different board than is used in the acutal table for reading tags
+  
   RFID Eval 13.56MHz Shield example sketch v10
 
   Aaron Weiss, aaron at sparkfun dot com
