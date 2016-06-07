@@ -1,4 +1,7 @@
+DTN Strategy Blocks technical info
+
 audio amp setup
+Adafruit MAX9744 20W Class D Stereo Amplifier
 
 close AD1, AD2, and Analog jumpers
 
@@ -7,4 +10,11 @@ Install:
 Speaker terminal blocks
 Power Capacitor
 Volume Pot.
+
+
+MP3 Player Setup
+Adafruit “Music Maker” MP3 Shield v4
+Install stackable headers to mate with Arduino and Strategy Blocks PCB
+
+
 
