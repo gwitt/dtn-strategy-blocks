@@ -111,7 +111,17 @@ void loop(void) {
   }
   fadeTo(block);
   playTrack(block);
-  while(getBlock() == block) delay(250);
+
+  boolean done= false;
+  while(!done){
+    boolean blockGone= true;
+    for (int i=0; i< 3; i++){
+      if ( getBlock() == block ) blockGone= false;
+      delay(30);
+    }
+    if (blockGone) done= true;
+    if (!musicPlayer.playingMusic) fadeTo(0);
+  }
 }
 
 void stopPlaying(){

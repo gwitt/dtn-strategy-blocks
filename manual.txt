@@ -1,0 +1,10 @@
+audio amp setup
+
+close AD1, AD2, and Analog jumpers
+
+Install:
+12v terminal block (use to power fan)
+Speaker terminal blocks
+Power Capacitor
+Volume Pot.
+
