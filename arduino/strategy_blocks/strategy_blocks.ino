@@ -80,7 +80,7 @@ void setup(void) {
 
   // initialise the music player
   if (! musicPlayer.begin()) { // initialise the music player
-     Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));
+     Serial.println(F("Couldn't find VS1053"));
      while (1);
   }
   Serial.println(F("VS1053 found"));
@@ -103,13 +103,17 @@ void setup(void) {
 
 void loop(void) {
   byte block= 0;
+  Serial.println("stop music");
   playTrack(0);
+  Serial.println("light off");
   fadeTo(0);
   while(block == 0){
     block= getBlock();
     delay(250);
   }
+  Serial.println("light on");
   fadeTo(block);
+  Serial.println("play music");
   playTrack(block);
 
   boolean done= false;
@@ -166,7 +170,7 @@ byte getBlock(){
   //Serial.println("Waiting for an ISO14443A Card ...");
   boolean blockFound = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength, 250); // timeout at 250ms
   if (!blockFound) return 0;
-  
+  Serial.print("found. ");  
   if (blockFound) {
     // Display some basic information about the card
     //Serial.println("Found an ISO14443A card");
@@ -195,7 +199,7 @@ byte getBlock(){
         // Data seems to have been read ... spit it out
         //nfc.PrintHexChar(data, 4);
         //Serial.println("");
-        Serial.print("Found Block ");
+        Serial.print("valid: #");
         Serial.println(data[0]);
     
         // Wait a bit before reading the card again
