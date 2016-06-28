@@ -44,20 +44,11 @@ Adafruit_VS1053_FilePlayer musicPlayer =
   Adafruit_VS1053_FilePlayer(SHIELD_RESET, SHIELD_CS, SHIELD_DCS, DREQ, CARDCS);
 
 byte currentTrack= 0; // 1 to 8, 0 for none
-char * filenames[]= {"1.MP3", "2.MP3", "3.MP3", "4.MP3", "5.MP3", "6.MP3", "7.MP3", "8.MP3"}; 
-char * logFilename= "log.txt";
+char* filenames[]= {"1.MP3", "2.MP3", "3.MP3", "4.MP3", "5.MP3", "6.MP3", "7.MP3", "8.MP3"}; 
 
 void setup(void) {
   Serial.begin(9600);
-
-  if (!SD.begin(CARDCS)) {
-    Serial.println(F("SD failed, or not present"));
-    while (1);  // don't do anything more
-  }
-  Serial.println("SD OK!");
-  
-  logPrint("");
-  logPrint("hello.");
+  Serial.println("hello.");
 
   // LED drivers
   pinMode(LED_A, OUTPUT);
@@ -76,47 +67,53 @@ void setup(void) {
 
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {
-    logPrint("Didn't find PN53x board");
+    Serial.print("Didn't find PN53x board");
     while (1); // halt
   }
   // Got ok data, print it out!
-  logPrint("RFID reader found.");
   Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX); 
   Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+  
   // configure board to read RFID tags
   nfc.SAMConfig();
 
   // initialise the music player
   if (! musicPlayer.begin()) { // initialise the music player
-     logPrint("Couldn't find VS1053");
+     Serial.println(F("Couldn't find VS1053"));
      while (1);
   }
-  logPrint("VS1053 found");
+  Serial.println(F("VS1053 found"));
 
   //musicPlayer.sineTest(0x44, 500);    // Make a tone to indicate VS1053 is working
+ 
+  if (!SD.begin(CARDCS)) {
+    Serial.println(F("SD failed, or not present"));
+    while (1);  // don't do anything more
+  }
+  Serial.println("SD OK!");
   
   // Set volume for left, right channels. lower numbers == louder volume!
   musicPlayer.setVolume(0, 0);
 
   if (! musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT))
-    logPrint("DREQ pin is not an interrupt pin");
+    Serial.println(F("DREQ pin is not an interrupt pin"));
 
 }
 
 void loop(void) {
   byte block= 0;
-  logPrint("stopping music...");
+  Serial.println("stop music");
   playTrack(0);
-  logPrint("lights out...");
+  Serial.println("light off");
   fadeTo(0);
   while(block == 0){
     block= getBlock();
     delay(250);
   }
-  logPrint("light on...");
+  Serial.println("light on");
   fadeTo(block);
-  logPrint("playing music...");
+  Serial.println("play music");
   playTrack(block);
 
   boolean done= false;
@@ -153,7 +150,7 @@ void playTrack(byte track){
   
   // Start playing a file, then we can do stuff while waiting for it to finish
   if (! musicPlayer.startPlayingFile(filenames[track-1])) {
-    logPrint("Could not open file");
+    Serial.println("Could not open file");
     while (1);
   }
   Serial.print("playing ");
@@ -169,11 +166,11 @@ byte getBlock(){
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
-  logPrint("Checking for block...");
+  Serial.println("Checking for block...");
   //Serial.println("Waiting for an ISO14443A Card ...");
   boolean blockFound = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength, 250); // timeout at 250ms
   if (!blockFound) return 0;
-  logPrint("found. ");  
+  Serial.print("found. ");  
   if (blockFound) {
     // Display some basic information about the card
     //Serial.println("Found an ISO14443A card");
@@ -202,7 +199,6 @@ byte getBlock(){
         // Data seems to have been read ... spit it out
         //nfc.PrintHexChar(data, 4);
         //Serial.println("");
-        logPrint("Block Valid.");
         Serial.print("valid: #");
         Serial.println(data[0]);
     
@@ -211,7 +207,7 @@ byte getBlock(){
       }
       else
       {
-        logPrint("Unable to read the requested page");
+        Serial.println("Unable to read the requested page");
       }
     }
   }
@@ -262,12 +258,5 @@ void fadeTo(byte target){
   }
   
   currentTrack= target;
-}
-
-void logPrint(char * str){
-  Serial.println(str);
-  File logFile= SD.open(logFilename, O_READ | O_WRITE | O_CREAT | O_APPEND);
-  logFile.println(str);
-  logFile.close();
 }
 
