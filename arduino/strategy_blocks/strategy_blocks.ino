@@ -10,6 +10,7 @@ Much of this taken from Adafruit PN532 library example
 #include <Adafruit_PN532.h>
 #include <Adafruit_VS1053.h>
 #include <SD.h>
+#include <avr/wdt.h>
 
 // PN532 pins (RFID reader)
 // define the pins for SPI communication
@@ -103,9 +104,14 @@ void setup(void) {
   // flash all lights to let us know we reset
   for (int i=0; i<8; i++) fadeTo(i+1);
   fadeTo(0);
+
+  // enable watchdog
+  watchdogSetup();
 }
 
 void loop(void) {
+  wdt_reset(); // poke watchdog
+  
   byte block= 0;
   //Serial.println("stop music");
   playTrack(0);
@@ -114,7 +120,10 @@ void loop(void) {
   while(block == 0){
     block= getBlock();
     delay(250);
+    
+    wdt_reset(); // poke watchdog
   }
+  
   //Serial.println("light on");
   fadeTo(block);
   //Serial.println("play music");
@@ -129,6 +138,8 @@ void loop(void) {
     }
     if (blockGone) done= true;
     if (!musicPlayer.playingMusic) fadeTo(0);
+    
+    wdt_reset(); // poke watchdog
   }
 }
 
@@ -262,5 +273,43 @@ void fadeTo(byte target){
   }
   
   currentTrack= target;
+}
+
+void watchdogSetup(void) {
+  cli(); // disable interrupts
+  
+  wdt_reset();
+
+/*
+  WDTCSR configuration:
+  WDIE = 1: Interrupt Enable 
+  WDE = 1 :Reset Enable
+  table for time-out variations: 
+  WDP3 WDP2 WDP1 WDP0  Time-out (ms)
+    0    0    0    0     16
+    0    0    0    1     32
+    0    0    1    0     64
+    0    0    1    1     125
+    0    1    0    0     250
+    0    1    0    1     500
+    0    1    1    0     1000
+    0    1    1    1     2000
+    1    0    0    0     4000
+    1    0    0    1     8000
+
+*/
+
+  // Enter Watchdog Configuration mode:
+  WDTCSR |= (1<<WDCE) | (1<<WDE);
+
+  // Set Watchdog to reset after 4 seconds:
+  WDTCSR = (1<<WDIE) |
+           (1<<WDE)  |
+           (1<<WDP3) |
+           (0<<WDP2) |
+           (0<<WDP1) |
+           (0<<WDP0);
+
+  sei(); // re-enable interrupts
 }
 
