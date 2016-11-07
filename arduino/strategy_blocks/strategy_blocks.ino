@@ -99,6 +99,10 @@ void setup(void) {
   if (! musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT)){ 
     //Serial.println(F("DREQ pin is not an interrupt pin"));
   }
+
+  // flash all lights to let us know we reset
+  for (int i=0; i<8; i++) fadeTo(i+1);
+  fadeTo(0);
 }
 
 void loop(void) {
