@@ -48,6 +48,7 @@ SoftwareSerial rfid(7, 8);
 
 //Global var
 byte response[30];
+int currentBlock= 1;
 
 //INIT
 void setup()
@@ -66,16 +67,18 @@ void setup()
 }
 
 void loop(){ while(1) {
-  Serial.println("Searching for tag...");
+  Serial.print("Searching for tag... ");
   while(!searchForTag());
   if (!readTag()) break;
-  Serial.println("Enter number to write tag (0 to 9)");
+  Serial.print("<enter> to write ");
+  Serial.print(currentBlock);
+  Serial.println(" to tag.");
+  Serial.println("or enter (1 to 8) to change number.");
   int newNum= getInput();
-  if (newNum == -1){
-    Serial.println("Aborted: invalid input.");
-    break;
-  }
-  writeTag(newNum);
+  if (newNum != -1) currentBlock= newNum;
+  
+  writeTag(currentBlock);
+  Serial.println();
 }}
 
 void writeTag(byte n){
@@ -107,7 +110,7 @@ boolean readTag(){
   else if (len == 0) Serial.println("Read failed.");
   else if (response[0] != addr) Serial.println("Read failed: unexpected data");
   else if (response[0] == addr){
-    Serial.print("Tag Read: ");
+    //Serial.print("Tag Read: ");
     Serial.println(response[1], HEX);
   }
   if (len > 0) return true;
@@ -122,7 +125,7 @@ boolean searchForTag(){
   len= getResponse(cmd);
   if (len == -1) Serial.println("aborted.");
   else if (len == 0) Serial.println("failed.");
-  else if (response[0] == 0x01) Serial.println("Tag found.");
+  else if (response[0] == 0x01) Serial.print("Found: ");
   else return false;
   
   return true;
