@@ -67,17 +67,25 @@ void setup()
 }
 
 void loop(){ while(1) {
-  Serial.print("Searching for tag... ");
-  while(!searchForTag());
-  if (!readTag()) break;
-  Serial.print("<enter> to write ");
-  Serial.print(currentBlock);
-  Serial.println(" to tag.");
-  Serial.println("or enter (1 to 8) to change number.");
+  Serial.print("Current Block: ");
+  Serial.println(currentBlock);
+  Serial.println("<enter> to write or (1 to 8) to change number.");
   int newNum= getInput();
   if (newNum != -1) currentBlock= newNum;
+
+  Serial.print("Searching for tag... ");
+  while(!searchForTag());
+  int tagNum= readTag();
+  if (tagNum == -1) break;
+  Serial.println(tagNum);
   
   writeTag(currentBlock);
+  Serial.print("Verifying... ");
+  while(!searchForTag());
+  tagNum= readTag();
+  if (tagNum == currentBlock) Serial.println("OK");
+  else Serial.println("ERROR");
+  if (tagNum == -1) break;
   Serial.println();
 }}
 
@@ -102,7 +110,7 @@ int getInput(){
   return num;
 }
 
-boolean readTag(){
+int readTag(){
   byte addr= 0x04;
   byte cmd= readBlock(addr);
   int len= getResponse(cmd);
@@ -111,10 +119,10 @@ boolean readTag(){
   else if (response[0] != addr) Serial.println("Read failed: unexpected data");
   else if (response[0] == addr){
     //Serial.print("Tag Read: ");
-    Serial.println(response[1], HEX);
+    //Serial.println(response[1], HEX);
   }
-  if (len > 0) return true;
-  else return false;
+  if (len > 0) return response[1];
+  else return -1;
 }
 
 boolean searchForTag(){
@@ -125,7 +133,7 @@ boolean searchForTag(){
   len= getResponse(cmd);
   if (len == -1) Serial.println("aborted.");
   else if (len == 0) Serial.println("failed.");
-  else if (response[0] == 0x01) Serial.print("Found: ");
+  else if (response[0] == 0x01); // Serial.print("found: ");
   else return false;
   
   return true;
