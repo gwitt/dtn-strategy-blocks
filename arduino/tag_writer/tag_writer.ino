@@ -77,7 +77,8 @@ void loop(){ while(1) {
   while(!searchForTag());
   int tagNum= readTag();
   if (tagNum == -1) break;
-  Serial.println(tagNum);
+  if(tagNum != 0) Serial.print(tagNum);
+  Serial.println();
   
   writeTag(currentBlock);
   Serial.print("Verifying... ");
@@ -122,8 +123,14 @@ int readTag(){
     //Serial.print("Tag Read: ");
     //Serial.println(response[1], HEX);
   }
-  if (len > 0) return response[1];
-  else return -1;
+
+  if (len < 1) return -1;
+  int tagNum= response[1];
+  for(int i=1; i<5; i++) if (response[i] != tagNum){
+    Serial.print("found new tag.");
+    return 0;
+  }
+  return tagNum;
 }
 
 boolean searchForTag(){
