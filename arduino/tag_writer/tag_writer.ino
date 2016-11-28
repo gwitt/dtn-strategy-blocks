@@ -56,7 +56,6 @@ void setup()
   Serial.begin(9600);
   Serial.println();
   Serial.println("DTN Strategy Block Writing Utility");
-  Serial.println();
   
   // set the data rate for the SoftwareSerial ports
   rfid.begin(19200);
@@ -67,11 +66,12 @@ void setup()
 }
 
 void loop(){ while(1) {
+  Serial.println();
   Serial.print("Current Block: ");
   Serial.println(currentBlock);
   Serial.println("<enter> to write or (1 to 8) to change number.");
   int newNum= getInput();
-  if (newNum != -1) currentBlock= newNum;
+  if (newNum != -1){ currentBlock= newNum; break; }
 
   Serial.print("Searching for tag... ");
   while(!searchForTag());
@@ -88,7 +88,6 @@ void loop(){ while(1) {
   else Serial.println("ERROR");
   delay(500);
   if (tagNum == -1) break;
-  Serial.println();
 }}
 
 void writeTag(byte n){
