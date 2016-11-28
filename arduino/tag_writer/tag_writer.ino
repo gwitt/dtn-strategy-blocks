@@ -85,6 +85,7 @@ void loop(){ while(1) {
   tagNum= readTag();
   if (tagNum == currentBlock) Serial.println("OK");
   else Serial.println("ERROR");
+  delay(500);
   if (tagNum == -1) break;
   Serial.println();
 }}
