@@ -1,6 +1,6 @@
 /*
   This uses the red Sparkfun RFID Eval Board for Writing tags
-  This is a different board than is used in the acutal table for reading tags
+  This is a different board than is used in the acutal radio for reading tags
   
   RFID Eval 13.56MHz Shield example sketch v10
 
@@ -29,6 +29,17 @@
   We're using page 4 to store block/song number. all 4 bytes are set the same.
   after writing, page 4 could be permanently locked by setting its lock bit:
   write 0b00010000 to byte 0x2 of page 2
+
+  Block / Song numbers:
+  1 - Saying I'm sorry...
+  2 - When something seems bad...
+  3 - Keep trying...
+  4 - You can be a big helper...
+  5 - Friends help each other...
+  6 - Grownups come back
+  7 - It's OK to feel sad...
+  8 - When you feel so mad...
+  
 */
 
 #include <SoftwareSerial.h>
