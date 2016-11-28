@@ -28,7 +28,7 @@
   Write data is 16 bytes, but only the first 4 are used (one page)
   We're using page 4 to store block/song number. all 4 bytes are set the same.
   after writing, page 4 could be permanently locked by setting its lock bit:
-  write 0b00010000 to byte 0x2 of page 2
+  write 0bd00010000 to byte 0x2 of page 2
 
   Block / Song numbers:
   1 - Saying I'm sorry...
@@ -134,7 +134,7 @@ int readTag(){
 }
 
 boolean searchForTag(){
-  delay(200);
+  delay(20);
   byte cmd= seek();
     
   int len;
@@ -151,7 +151,7 @@ boolean searchForTag(){
 int getResponse(byte cmd){
   // minimum response length is 5 bytes: header, reserved, length, command, csum
   while(rfid.available() < 5) if (checkAbort()) return -1;
-  delay(100); // wait for UART to fill
+  delay(50); // wait for UART to fill
 
   // check message validity
   byte csum= 0;
