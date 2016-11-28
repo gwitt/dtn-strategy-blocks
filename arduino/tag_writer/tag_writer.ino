@@ -78,6 +78,7 @@ void loop(){ while(1) {
   int tagNum= readTag();
   if (tagNum == -1) break;
   if(tagNum != 0) Serial.print(tagNum);
+  if(tagNum == currentBlock){ Serial.println("\nNo write needed."); delay(500); break; }
   Serial.println();
   
   writeTag(currentBlock);
